@@ -11,24 +11,61 @@ const UseState = (props) => {
     confirmed: false,
   });
 
-  console.log(state);
+  const onConfirm = () => {
+    setState({
+      ...state,
+      error: false,
+      loading: false,
+      confirmed: true,
+    });
+  };
+
+  const onError = () => {
+    setState({
+      ...state,
+      error: true,
+      loading: false,
+    });
+  };
+
+  const onWrite = (newValue) => {
+    setState({
+      ...state,
+      value: newValue,
+    });
+  };
+
+  const onCheck = () => {
+    setState({
+      ...state,
+      loading: true,
+      error: false,
+    });
+  };
+
+  const onDelete = () => {
+    setState({
+      ...state,
+      deleted: true,
+    });
+  };
+
+  const onReset = () => {
+    setState({
+      ...state,
+      value: "",
+      confirmed: false,
+      deleted: false,
+    });
+  };
 
   React.useEffect(() => {
     if (state.loading == true) {
       setTimeout(() => {
         if (state.value != SECURITY_CODE) {
-          setState({
-            ...state,
-            error: true,
-            loading: false,
-          });
+          onError();
         } else {
-          setState({
-            ...state,
-            error: false,
-            loading: false,
-            confirmed: true,
-          });
+          onConfirm();
         }
       }, 2000);
     }
@@ -47,24 +84,9 @@ const UseState = (props) => {
         <input
           placeholder="Security code"
           value={state.value}
-          onChange={(event) =>
-            setState({
-              ...state,
-              value: event.target.value,
-            })
-          }
+          onChange={(event) => onWrite(event.target.value)}
         />
-        <button
-          onClick={() => {
-            setState({
-              ...state,
-              loading: true,
-              error: false,
-            });
-          }}
-        >
-          Check
-        </button>
+        <button onClick={onCheck}>Check</button>
       </div>
     );
   } else if (state.confirmed == true && state.deleted == false) {
@@ -73,45 +95,15 @@ const UseState = (props) => {
         <h2>Delete {props.name}</h2>
 
         <p>Are you sure you want to delete UseState?</p>
-        <button
-          onClick={() =>
-            setState({
-              ...state,
-              deleted: true,
-            })
-          }
-        >
-          Yes, delete it
-        </button>
-        <button
-          onClick={() =>
-            setState({
-              ...state,
-              confirmed: false,
-              value: "",
-            })
-          }
-        >
-          No, cancel
-        </button>
+        <button onClick={onDelete}>Yes, delete it</button>
+        <button onClick={onReset}>No, cancel</button>
       </React.Fragment>
     );
   } else {
     return (
       <React.Fragment>
         <p>Deleted successfully!</p>
-        <button
-          onClick={() =>
-            setState({
-              ...state,
-              value: "",
-              confirmed: false,
-              deleted: false,
-            })
-          }
-        >
-          Recover UseState
-        </button>
+        <button onClick={onReset}>Recover UseState</button>
       </React.Fragment>
     );
   }
